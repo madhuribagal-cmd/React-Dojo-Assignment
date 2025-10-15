@@ -7,8 +7,12 @@ import {
   Paper,
   Select,
   MenuItem,
+  FormControl,
+  InputLabel,
+  FormHelperText,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
+import { v4 as uuidv4 } from "uuid";
 
 const RegisterPage = () => {
   const {
@@ -26,13 +30,17 @@ const RegisterPage = () => {
   };
 
   const onSubmit = (data) => {
+    const userId = uuidv4();
+    console.log("data", data);
+    const newUser = { id: userId, ...data };
+    console.log("newUser", newUser);
     const existingUsers = JSON.parse(localStorage.getItem("registeredUsers"));
     if (existingUsers) {
-      existingUsers.push(data);
+      existingUsers.push(newUser);
       localStorage.setItem("registeredUsers", JSON.stringify(existingUsers));
     } else {
       // Store user in array format into localstorage
-      localStorage.setItem("registeredUsers", JSON.stringify([data]));
+      localStorage.setItem("registeredUsers", JSON.stringify([newUser]));
     }
     alert("User registered successfully!");
     navigate("/login");
@@ -168,22 +176,28 @@ const RegisterPage = () => {
           <Controller
             name="role"
             control={control}
+            defaultValue=""
             rules={{ required: "Role is required" }}
             render={({ field }) => (
-              <Select
-                {...field} // Spreads onChange, onBlur, and value to the Select
-                fullWidth
-                label="Role"
-                margin="normal"
-                name="role"
-              >
-                <MenuItem key="admin" value="admin">
-                  Admin
-                </MenuItem>
-                <MenuItem key="employee" value="employee">
-                  Employee
-                </MenuItem>
-              </Select>
+              <FormControl fullWidth error={!!errors.role}>
+                <InputLabel>Role</InputLabel>
+                <Select
+                  {...field} // Spreads onChange, onBlur, and value to the Select
+                  fullWidth
+                  label="Role"
+                  margin="normal"
+                  name="role"
+                  error={!!errors.role}
+                >
+                  <MenuItem key="admin" value="admin">
+                    Admin
+                  </MenuItem>
+                  <MenuItem key="employee" value="employee">
+                    Employee
+                  </MenuItem>
+                </Select>
+                <FormHelperText>{errors.role?.message}</FormHelperText>
+              </FormControl>
             )}
           />
 

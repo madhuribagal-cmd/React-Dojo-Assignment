@@ -12,13 +12,14 @@ import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import SaveIcon from "@mui/icons-material/Save";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
-import { employees } from "../data";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 const AdminPage = () => {
   const navigate = useNavigate();
-  const [tableData, setTableData] = useState([...employees]);
+  const registeredUsers = JSON.parse(localStorage.getItem("registeredUsers"));
+  console.log("registeredUsers", registeredUsers);
+  const [tableData, setTableData] = useState([...registeredUsers]);
   const [editRecordId, setEditRecordId] = useState(null);
   const [editedRowData, setEditedRowData] = useState(null);
 
@@ -41,9 +42,25 @@ const AdminPage = () => {
   };
 
   const saveHandler = () => {
-    setTableData((prevData) =>
-      prevData.map((row) => (row.id === editedRowData.id ? editedRowData : row))
-    );
+    const loggedUser = JSON.parse(localStorage.getItem("user"));
+    if (editedRowData.id === loggedUser.id)
+      localStorage.setItem("user", JSON.stringify(editedRowData));
+
+    setTableData((prevData) => {
+      const updatedData = prevData.map((row) =>
+        row.id === editedRowData.id ? editedRowData : row
+      );
+      console.log("updatedData", updatedData);
+      const existingUsers = JSON.parse(localStorage.getItem("registeredUsers"));
+      const updatedRegisteredUsers = existingUsers.map((item) =>
+        item.id === editedRowData.id ? editedRowData : item
+      );
+      localStorage.setItem(
+        "registeredUsers",
+        JSON.stringify(updatedRegisteredUsers)
+      );
+      return updatedData;
+    });
     setEditRecordId(null);
   };
 
@@ -64,51 +81,43 @@ const AdminPage = () => {
       <Table sx={{ mt: 3 }}>
         <TableHead>
           <TableRow>
-            <TableCell>ID</TableCell>
             <TableCell>Name</TableCell>
-            <TableCell>Age</TableCell>
-            <TableCell>Position</TableCell>
+            <TableCell>Email</TableCell>
+            <TableCell>Mobile</TableCell>
+            <TableCell>Role</TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {tableData.map((emp) => (
             <TableRow key={emp.id}>
-              <TableCell>{emp.id}</TableCell>
+              <TableCell>{emp.name}</TableCell>
               {editRecordId === emp.id ? (
                 <>
                   <TableCell>
                     <input
-                      type="text"
-                      name="name"
-                      value={editedRowData.name}
-                      onChange={handleChange}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <input
-                      type="number"
-                      name="age"
-                      value={editedRowData.age}
+                      type="email"
+                      name="email"
+                      value={editedRowData.email}
                       onChange={handleChange}
                     />
                   </TableCell>
                   <TableCell>
                     <input
                       type="text"
-                      name="position"
-                      value={editedRowData.position}
+                      name="mobile"
+                      value={editedRowData.mobile}
                       onChange={handleChange}
                     />
                   </TableCell>
                 </>
               ) : (
                 <>
-                  <TableCell>{emp.name}</TableCell>
-                  <TableCell>{emp.age}</TableCell>
-                  <TableCell>{emp.position}</TableCell>
+                  <TableCell>{emp.email}</TableCell>
+                  <TableCell>{emp.mobile}</TableCell>
                 </>
               )}
+              <TableCell>{emp.role}</TableCell>
 
               <TableCell>
                 {editRecordId === emp.id ? (

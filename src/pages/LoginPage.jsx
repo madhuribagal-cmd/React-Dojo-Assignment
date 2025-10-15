@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Box, Button, TextField, Typography, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-// import { users } from "../data";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
@@ -11,11 +10,9 @@ const LoginPage = () => {
 
   const handleLogin = () => {
     const users = JSON.parse(localStorage.getItem("registeredUsers"));
-    console.log("users", users);
-    const user = users.find(
-      (u) => u.name === username && u.password === password
-    );
-    console.log("user", user);
+    const user =
+      users &&
+      users.find((u) => u.name === username && u.password === password);
     if (user) {
       localStorage.setItem("user", JSON.stringify(user));
       navigate(user.role === "admin" ? "/admin" : "/employee");

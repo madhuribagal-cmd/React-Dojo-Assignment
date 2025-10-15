@@ -1,8 +1,3 @@
-export const users = [
-  { username: "admin", password: "admin123", role: "admin" },
-  { username: "employee", password: "emp123", role: "employee" },
-];
-
 export const employees = [
   { id: 1, name: "Alice", age: 20, position: "Developer" },
   { id: 2, name: "Bob", age: 24, position: "Designer" },
