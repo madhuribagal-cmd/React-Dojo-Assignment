@@ -18,7 +18,6 @@ import { useState } from "react";
 const AdminPage = () => {
   const navigate = useNavigate();
   const registeredUsers = JSON.parse(localStorage.getItem("registeredUsers"));
-  console.log("registeredUsers", registeredUsers);
   const [tableData, setTableData] = useState([...registeredUsers]);
   const [editRecordId, setEditRecordId] = useState(null);
   const [editedRowData, setEditedRowData] = useState(null);
@@ -50,9 +49,7 @@ const AdminPage = () => {
       const updatedData = prevData.map((row) =>
         row.id === editedRowData.id ? editedRowData : row
       );
-      console.log("updatedData", updatedData);
-      const existingUsers = JSON.parse(localStorage.getItem("registeredUsers"));
-      const updatedRegisteredUsers = existingUsers.map((item) =>
+      const updatedRegisteredUsers = registeredUsers.map((item) =>
         item.id === editedRowData.id ? editedRowData : item
       );
       localStorage.setItem(
@@ -65,8 +62,11 @@ const AdminPage = () => {
   };
 
   const deleteHandler = (id) => {
-    console.log("id", id);
-    setTableData((prevData) => prevData.filter((row) => row.id !== id));
+    setTableData((prevData) => {
+      const updatedUserList = prevData.filter((row) => row.id !== id);
+      localStorage.setItem("registeredUsers", JSON.stringify(updatedUserList));
+      return updatedUserList;
+    });
   };
 
   return (
